@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,24 +15,30 @@ namespace CSharp_Practice_OOXML
     {
         static void Main(string[] args)
         {
-            /* *** Define the complete path to the file which is about to be constructed *** */
-            string pathToFolder = "C:\\Test OpenXML";
-            string completePathToFile =pathToFolder+ "\\myText.docx";
+            /* *** Define names and complete path of the file *** */
+            string completePathToNewFile = "C:\\Test OpenXML\\myNewFile.docx";
+            string completePathToExistingFile = "C:\\Test OpenXML\\myText.docx";
 
             /* *** Use Open Office XML to define content *** */
-            Text text = new Text("This is my first Open Office Application.");
+            Text text = new Text("This is newly added text");
             Run run = new Run(text);
             Paragraph paragraph = new Paragraph(run);
-            Body body = new Body(paragraph);
-            Document document = new Document(body);
 
-            /* *** Use Open Office XML to build the file *** */
-            using (var file=WordprocessingDocument.Create(completePathToFile,WordprocessingDocumentType.Document))
+            /* *** Use System.IO to copy the existing file *** */
+            if (File.Exists(completePathToNewFile))
             {
-                file.AddMainDocumentPart();
-                file.MainDocumentPart.Document = document;
+                File.Delete(completePathToNewFile);
+            }
+
+            File.Copy(completePathToExistingFile, completePathToNewFile);
+
+            /* *** Use Open Office XML to open file and add its new content *** */
+            using (WordprocessingDocument file=WordprocessingDocument.Open(completePathToNewFile,true))
+            {
+                file.MainDocumentPart.Document.AppendChild(paragraph);
                 file.MainDocumentPart.Document.Save();
             }
+
         }
     }
 }
