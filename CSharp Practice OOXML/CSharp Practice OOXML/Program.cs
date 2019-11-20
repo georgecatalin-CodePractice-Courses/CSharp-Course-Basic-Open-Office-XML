@@ -16,58 +16,39 @@ namespace CSharp_Practice_OOXML
         static void Main(string[] args)
         {
             /* *** Define names and complete path of the file *** */
-            string filename = "\\New Word Document With Styles.docx";
-            string path = "C:\\Test OpenXML";
-            string completePathOfNewFile = path + filename;
+            string pathToFolder = "C:\\Test OpenXML";
+            string filename = "\\Set Background of an Element.docx";
+            string completePathToFile = pathToFolder + filename;
 
-            /* *** Create document *** */
-            using (WordprocessingDocument file = WordprocessingDocument.Create(completePathOfNewFile, WordprocessingDocumentType.Document)) 
+            /* *** Use Open Office XML to set RunProperties *** */
+            RunProperties runProperties = new RunProperties();
+
+            Shading shading = new Shading();
+            shading.Color = "auto";
+            shading.Fill = "00FF00";
+            shading.Val = ShadingPatternValues.Clear;
+
+            runProperties.Append(shading);
+
+            /* *** Use Open Office XML to add content *** */
+            Run run = new Run();
+            run.Append(runProperties);
+            run.Append(new Text("This is new text with the purpose of changing background color."));
+
+            Paragraph paragraph = new Paragraph(run);
+            Body body = new Body(paragraph);
+            Document document = new Document(body);
+
+            /* *** Use Open Office XML to construct the document *** */
+            using (WordprocessingDocument file = WordprocessingDocument.Create(completePathToFile, WordprocessingDocumentType.Document))
             {
                 file.AddMainDocumentPart();
-
-                //Create styles definitions part
-                StyleDefinitionsPart styleDefinitionsPart = file.MainDocumentPart.AddNewPart<StyleDefinitionsPart>();
-
-                //Create styles
-                Styles styles = new Styles();
-                styles.Save(styleDefinitionsPart);
-                styles = styleDefinitionsPart.Styles;
-
-                //Create style
-                Style style = new Style() 
-                { 
-                Type=StyleValues.Paragraph,
-                StyleId="header1",
-                CustomStyle=true,
-                Default=false
-                };
-
-                style.Append(new StyleName() { Val = "Header 1" });
-
-                StyleRunProperties styleRunProperties = new StyleRunProperties();
-                styleRunProperties.Append(new Bold());
-                styleRunProperties.Append(new RunFonts() { Ascii = "Arial" });
-                styleRunProperties.Append(new FontSize() { Val = "24" });
-
-                style.Append(styleRunProperties);
-                styles.Append(style);
-
-                /*** Use Open Office XML to contain content in Word File *** */
-                Text text = new Text("This is text created with the purpose of setting a new style");
-                Run run = new Run(text);
-                Paragraph paragraph = new Paragraph(run);
-                Body body = new Body(paragraph);
-                Document document = new Document(body);
-
-                paragraph.ParagraphProperties = new ParagraphProperties(new ParagraphStyleId() { Val = "header1" });
-
                 file.MainDocumentPart.Document = document;
                 file.MainDocumentPart.Document.Save();
-
-
+            }
 
             }
 
         }
     }
-}
+
