@@ -16,31 +16,33 @@ namespace CSharp_Practice_OOXML
         static void Main(string[] args)
         {
             /* *** Define names and complete path of the file *** */
-            string pathToFolder = "C:\\Test OpenXML";
-            string filename = "\\Set Background of an Element.docx";
-            string completePathToFile = pathToFolder + filename;
+            string pathToFile = @"C:\Test OpenXML";
+            string fileName = @"\Set the text color.docx";
+            string completePathFile = pathToFile + fileName;
 
-            /* *** Use Open Office XML to set RunProperties *** */
+            /* *** Use Open Office XML to define the styles *** */
             RunProperties runProperties = new RunProperties();
 
-            Shading shading = new Shading();
-            shading.Color = "auto";
-            shading.Fill = "00FF00";
-            shading.Val = ShadingPatternValues.Clear;
+            Color color = new Color();
+            color.Val = "00FF00";
 
-            runProperties.Append(shading);
+            runProperties.Append(color);
 
-            /* *** Use Open Office XML to add content *** */
+            /* *** Use Open Office XML to create content *** */
             Run run = new Run();
             run.Append(runProperties);
-            run.Append(new Text("This is new text with the purpose of changing background color."));
+            run.Append(new Text("This is text to be added with a new color."));
 
-            Paragraph paragraph = new Paragraph(run);
-            Body body = new Body(paragraph);
+            Paragraph paragraph = new Paragraph();
+            paragraph.Append(run);
+
+            Body body = new Body();
+            body.Append(paragraph);
+
             Document document = new Document(body);
 
-            /* *** Use Open Office XML to construct the document *** */
-            using (WordprocessingDocument file = WordprocessingDocument.Create(completePathToFile, WordprocessingDocumentType.Document))
+            /* *** Use Open Office XML to construct the file *** */
+            using (WordprocessingDocument file=WordprocessingDocument.Create(completePathFile,WordprocessingDocumentType.Document))
             {
                 file.AddMainDocumentPart();
                 file.MainDocumentPart.Document = document;
