@@ -17,40 +17,34 @@ namespace CSharp_Practice_OOXML
         {
             /* *** Define names and complete path of the file *** */
             string pathToFile = @"C:\Test OpenXML";
-            string fileName = @"\Set the text color.docx";
+            string fileName = @"\Set the text font.docx";
             string completePathFile = pathToFile + fileName;
 
             /* *** Use Open Office XML to define the styles *** */
-            RunProperties runProperties = new RunProperties();
+            RunFonts runFonts = new RunFonts();
+            runFonts.Ascii = "Tahoma";
 
-            Color color = new Color();
-            color.Val = "00FF00";
-
-            runProperties.Append(color);
-
-            /* *** Use Open Office XML to create content *** */
             Run run = new Run();
-            run.Append(runProperties);
-            run.Append(new Text("This is text to be added with a new color."));
+            run.AppendChild(runFonts);
+            run.AppendChild(new Text("This is new text created with the purpose to set the Font in OOXML."));
 
             Paragraph paragraph = new Paragraph();
-            paragraph.Append(run);
+            paragraph.AppendChild(run);
 
             Body body = new Body();
-            body.Append(paragraph);
+            body.AppendChild(paragraph);
 
-            Document document = new Document(body);
+            Document document = new Document();
+            document.Append(body);
 
             /* *** Use Open Office XML to construct the file *** */
-            using (WordprocessingDocument file=WordprocessingDocument.Create(completePathFile,WordprocessingDocumentType.Document))
+            using (WordprocessingDocument file = WordprocessingDocument.Create(completePathFile, WordprocessingDocumentType.Document))
             {
                 file.AddMainDocumentPart();
                 file.MainDocumentPart.Document = document;
                 file.MainDocumentPart.Document.Save();
             }
-
-            }
-
         }
     }
+}
 
