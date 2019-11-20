@@ -17,33 +17,53 @@ namespace CSharp_Practice_OOXML
         {
             /* *** Define names and complete path of the file *** */
             string pathToFile = @"C:\Test OpenXML";
-            string fileName = @"\Set the text font.docx";
+            string fileName = @"\Create a table.docx";
             string completePathFile = pathToFile + fileName;
 
-            /* *** Use Open Office XML to define the styles *** */
-            RunFonts runFonts = new RunFonts();
-            runFonts.Ascii = "Tahoma";
+            /* *** Use Open Office XML to define the table *** */
+            Table table = new Table();
 
-            Run run = new Run();
-            run.AppendChild(runFonts);
-            run.AppendChild(new Text("This is new text created with the purpose to set the Font in OOXML."));
+            /* *** Use Open Office XML to create the first row of the table *** */
+            TableRow tableRow = new TableRow();
 
-            Paragraph paragraph = new Paragraph();
-            paragraph.AppendChild(run);
+            /* *** Use Open Office XML to create each cell(column) in the table heading *** */
+            tableRow.Append(CreateTableCell("Column A"));
+            tableRow.Append(CreateTableCell("Column B"));
+            tableRow.Append(CreateTableCell("Column C"));
+            tableRow.Append(CreateTableCell("Column D"));
 
-            Body body = new Body();
-            body.AppendChild(paragraph);
+            table.Append(tableRow);
 
-            Document document = new Document();
-            document.Append(body);
+            /* *** Use Open Office XML to create the other rows of the table *** */
+            for (int i = 1; i <= 10; i++)
+            {
+               tableRow = new TableRow();
+
+                tableRow.AppendChild(CreateTableCell("A" + i.ToString()));
+                tableRow.AppendChild(CreateTableCell("B" + i.ToString()));
+                tableRow.AppendChild(CreateTableCell("C" + i.ToString()));
+                tableRow.AppendChild(CreateTableCell("D" + i.ToString()));
+
+                table.AppendChild(tableRow);
+            }
+
+            Body body = new Body(table);
+            Document document = new Document(body);
 
             /* *** Use Open Office XML to construct the file *** */
-            using (WordprocessingDocument file = WordprocessingDocument.Create(completePathFile, WordprocessingDocumentType.Document))
+            using (WordprocessingDocument file=WordprocessingDocument.Create(completePathFile,WordprocessingDocumentType.Document))
             {
                 file.AddMainDocumentPart();
                 file.MainDocumentPart.Document = document;
                 file.MainDocumentPart.Document.Save();
             }
+        }
+
+
+        /* *** This is a helper method that adds a text element in a run element in a paragraph element  *** */
+        private static TableCell CreateTableCell(string text)
+        {
+            return new TableCell(new Paragraph(new Run(new Text(text))));
         }
     }
 }
